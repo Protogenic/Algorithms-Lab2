@@ -1,13 +1,24 @@
-package main
+package solution
 
-func BruteForce(rectangles []Rectangle, points []Point) []int {
+import (
+	"Algorithms_Lab2/types"
+	"fmt"
+	"time"
+)
+
+func BruteForce(rectangles []types.Rectangle, points []types.Point) {
+	startTime := time.Now()
 	appearances := make([]int, len(points))
 	for i := 0; i < len(points); i++ {
 		for j := 0; j < len(rectangles); j++ {
-			if rectangles[j].belongs(points[i]) {
+			if rectangles[j].Belongs(points[i]) {
 				appearances[i]++
 			}
 		}
 	}
-	return appearances
+
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	fmt.Println("Execution time: ", duration, "\n")
+	//fmt.Println(appearances)
 }
