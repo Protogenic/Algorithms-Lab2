@@ -1,15 +1,55 @@
-package solution
+package contest
 
 import (
-	"Algorithms_Lab2/types"
 	"fmt"
 	"sort"
-	"time"
 )
 
-func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
-	fmt.Print("Preparation time: ")
-	startTime := time.Now()
+type Point struct {
+	X int
+	Y int
+}
+
+type Rectangle struct {
+	LowerLeft  Point
+	UpperRight Point
+}
+
+type Event struct {
+	N     int
+	Left  int
+	Right int
+	State int
+}
+
+type Node struct {
+	Left       *Node
+	Right      *Node
+	LeftRange  int
+	RightRange int
+	Sum        int
+}
+
+func NewPoint(x int, y int) *Point {
+	return &Point{X: x, Y: y}
+}
+
+func NewRectangle(x1, y1, x2, y2 int) *Rectangle {
+	return &Rectangle{LowerLeft: *NewPoint(x1, y1), UpperRight: *NewPoint(x2, y2)}
+}
+
+func NewEvent(n, left, right, isBegOrEnd int) *Event {
+	return &Event{N: n, Left: left, Right: right, State: isBegOrEnd}
+}
+
+func NewNode(left *Node, right *Node, leftRange, rightRange, sum int) *Node {
+	return &Node{Left: left, Right: right, LeftRange: leftRange,
+		RightRange: rightRange, Sum: sum}
+}
+
+func SegmentTree(rectangles []Rectangle, points []Point) []int {
+	//fmt.Print("Preparation time: ")
+	//startTime := time.Now()
 
 	if len(rectangles) == 0 {
 		return make([]int, 0)
@@ -41,12 +81,12 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 		return compressedY[i] < compressedY[j]
 	})
 
-	events := make([]types.Event, 0, 2*len(rectangles))
+	events := make([]Event, 0, 2*len(rectangles))
 	for _, rectangle := range rectangles {
-		events = append(events, *types.NewEvent(BinarySearch(compressedX, rectangle.LowerLeft.X),
+		events = append(events, *NewEvent(BinarySearch(compressedX, rectangle.LowerLeft.X),
 			BinarySearch(compressedY, rectangle.LowerLeft.Y),
 			BinarySearch(compressedY, rectangle.UpperRight.Y)-1, 1))
-		events = append(events, *types.NewEvent(BinarySearch(compressedX, rectangle.UpperRight.X),
+		events = append(events, *NewEvent(BinarySearch(compressedX, rectangle.UpperRight.X),
 			BinarySearch(compressedY, rectangle.LowerLeft.Y),
 			BinarySearch(compressedY, rectangle.UpperRight.Y)-1, -1))
 	}
@@ -56,7 +96,7 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 
 	values := make([]int, len(compressedY))
 	root := BuildTree(values, 0, len(compressedY)-1)
-	roots := make([]*types.Node, 0, 2*len(rectangles)+1)
+	roots := make([]*Node, 0, 2*len(rectangles)+1)
 	lastX := events[0].N
 	for _, event := range events {
 		if event.N != lastX {
@@ -66,11 +106,11 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 		root = AddNode(root, event.Left, event.Right, event.State)
 	}
 
-	endTime := time.Now()
-	duration := endTime.Sub(startTime)
-	fmt.Println(duration)
+	//endTime := time.Now()
+	//duration := endTime.Sub(startTime)
+	//fmt.Println(duration)
 
-	startTime = time.Now()
+	//startTime = time.Now()
 
 	result := make([]int, len(points))
 	index := 0
@@ -85,35 +125,40 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 		index++
 	}
 
-	endTime = time.Now()
-	duration = endTime.Sub(startTime)
-	fmt.Println("Execution time: ", duration, "\n")
+	//endTime = time.Now()
+	//duration = endTime.Sub(startTime)
+	//fmt.Println("Execution time: ", duration, "\n")
 
-	fmt.Println(result)
+	for i := 0; i < len(result); i++ {
+		fmt.Print(result[i])
+		if i != len(result)-1 {
+			fmt.Print(" ")
+		}
+	}
 
 	return result
 }
 
-func BuildTree(array []int, leftIndex, rightIndex int) *types.Node {
+func BuildTree(array []int, leftIndex, rightIndex int) *Node {
 	if leftIndex >= rightIndex {
-		return types.NewNode(nil, nil, leftIndex, rightIndex, array[leftIndex])
+		return NewNode(nil, nil, leftIndex, rightIndex, array[leftIndex])
 	}
 	middle := (leftIndex + rightIndex) / 2
 
 	left := BuildTree(array, leftIndex, middle)
 	right := BuildTree(array, middle+1, rightIndex)
 
-	return types.NewNode(left, right, left.LeftRange, right.RightRange, left.Sum+right.Sum)
+	return NewNode(left, right, left.LeftRange, right.RightRange, left.Sum+right.Sum)
 }
 
-func AddNode(root *types.Node, leftIndex, rightIndex, sum int) *types.Node {
+func AddNode(root *Node, leftIndex, rightIndex, sum int) *Node {
 	if leftIndex <= root.LeftRange && root.RightRange <= rightIndex {
-		return types.NewNode(root.Left, root.Right, root.LeftRange, root.RightRange, root.Sum+sum)
+		return NewNode(root.Left, root.Right, root.LeftRange, root.RightRange, root.Sum+sum)
 	}
 	if root.RightRange < leftIndex || rightIndex < root.LeftRange {
 		return root
 	}
-	node := types.NewNode(root.Left, root.Right, root.LeftRange, root.RightRange, root.Sum)
+	node := NewNode(root.Left, root.Right, root.LeftRange, root.RightRange, root.Sum)
 	node.Left = AddNode(node.Left, leftIndex, rightIndex, sum)
 	node.Right = AddNode(node.Right, leftIndex, rightIndex, sum)
 	return node
@@ -136,7 +181,7 @@ func BinarySearch(array []int, target int) int {
 	return right
 }
 
-func BinarySearchTree(root *types.Node, index int) int {
+func BinarySearchTree(root *Node, index int) int {
 	if root == nil {
 		return 0
 	}
@@ -150,4 +195,31 @@ func BinarySearchTree(root *types.Node, index int) int {
 		sum = BinarySearchTree(root.Right, index)
 	}
 	return sum + root.Sum
+}
+
+func readData() ([]Rectangle, []Point) {
+	var numberOfRectangles int
+	fmt.Scanf("%d\n", &numberOfRectangles)
+	rectangles := make([]Rectangle, numberOfRectangles)
+	for i := 0; i < numberOfRectangles; i++ {
+		var x1, y1, x2, y2 int
+		fmt.Scanf("%d %d %d %d\n", &x1, &y1, &x2, &y2)
+		rectangles[i] = *NewRectangle(x1, y1, x2, y2)
+	}
+
+	var numberOfPoints int
+	fmt.Scanf("%d\n", &numberOfPoints)
+	points := make([]Point, numberOfPoints)
+	for i := 0; i < numberOfPoints; i++ {
+		var x, y int
+		fmt.Scanf("%d %d\n", &x, &y)
+		points[i] = *NewPoint(x, y)
+	}
+
+	return rectangles, points
+}
+
+func main() {
+	rectangles, points := readData()
+	SegmentTree(rectangles, points)
 }

@@ -10,25 +10,28 @@ import (
 	"Algorithms_Lab2/types"
 )
 
-func CompressedMap(rectangles []types.Rectangle, points []types.Point) {
+func CompressedMap(rectangles []types.Rectangle, points []types.Point) []int {
 	compressedX, compressedY, compressedMap := CompressedMapUtil(rectangles)
 
 	startTime := time.Now()
 
+	result := make([]int, len(points))
 	for i := range points {
 		X := binarySearch(compressedX, points[i].X)
 		Y := binarySearch(compressedY, points[i].Y)
 
 		if X == -1 || Y == -1 {
-			fmt.Println(points[i], 0)
+			continue
 		} else {
-			fmt.Println(points[i], compressedMap[Y][X])
+			result[i] = compressedMap[Y][X]
 		}
 	}
 
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	fmt.Println("Execution time: ", duration, "\n")
+
+	return result
 }
 
 func CompressedMapUtil(rectangles []types.Rectangle) ([]int, []int, [][]int) {
@@ -89,16 +92,19 @@ func CompressedMapUtil(rectangles []types.Rectangle) ([]int, []int, [][]int) {
 
 func binarySearch(array []int, target int) int {
 	left := 0
-	right := len(array)
+	right := len(array) - 1
 
-	for left < right {
+	for left <= right {
 		mid := (right + left) / 2
-		if target >= array[mid] {
-			left = mid + 1
+		if target == array[mid] {
+			return mid
+		}
+		if target < array[mid] {
+			right = mid - 1
 		} else {
-			right = mid
+			left = mid + 1
 		}
 	}
 
-	return left - 1
+	return right
 }

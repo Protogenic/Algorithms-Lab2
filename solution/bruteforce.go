@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func BruteForce(rectangles []types.Rectangle, points []types.Point) {
+func BruteForce(rectangles []types.Rectangle, points []types.Point) []int {
 	startTime := time.Now()
-	appearances := make([]int, len(points))
+	result := make([]int, len(points))
 	for i := 0; i < len(points); i++ {
 		for j := 0; j < len(rectangles); j++ {
 			if rectangles[j].Belongs(points[i]) {
-				appearances[i]++
+				result[i]++
 			}
 		}
 	}
@@ -20,5 +20,6 @@ func BruteForce(rectangles []types.Rectangle, points []types.Point) {
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	fmt.Println("Execution time: ", duration, "\n")
-	//fmt.Println(appearances)
+
+	return result
 }
