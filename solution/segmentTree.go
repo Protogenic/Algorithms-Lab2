@@ -89,8 +89,6 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 	duration = endTime.Sub(startTime)
 	fmt.Println("Execution time: ", duration, "\n")
 
-	fmt.Println(result)
-
 	return result
 }
 

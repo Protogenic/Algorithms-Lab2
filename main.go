@@ -8,27 +8,15 @@ import (
 )
 
 func main() {
-	rectangles, points := readData()
-	//rectangles, points := randomData()
+	//rectangles, points := readData()
+	rectangles, points := randomData()
 	fmt.Println("Brute force")
 	solution.BruteForce(rectangles, points)
-	//measureTime(solution.BruteForce, rectangles, points)
-	fmt.Println("Compressed map")
-	solution.CompressedMap(rectangles, points)
-	//measureTime(solution.CompressedMap, rectangles, points)
+	//fmt.Println("Compressed map")
+	//solution.CompressedMap(rectangles, points)
 	fmt.Println("Segment tree")
 	solution.SegmentTree(rectangles, points)
 }
-
-/*func measureTime(function func([]types.Rectangle, []types.Point),
-	rectangles []types.Rectangle, points []types.Point) {
-	startTime := time.Now()
-	function(rectangles, points)
-	endTime := time.Now()
-
-	duration := endTime.Sub(startTime)
-	fmt.Println("Execution time: ", duration, "\n")
-}*/
 
 func randomData() ([]types.Rectangle, []types.Point) {
 	var numberOfRectangles, numberOfPoints int
