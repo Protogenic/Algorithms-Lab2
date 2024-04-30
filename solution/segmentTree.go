@@ -57,11 +57,11 @@ func SegmentTree(rectangles []types.Rectangle, points []types.Point) []int {
 	values := make([]int, len(compressedY))
 	root := BuildTree(values, 0, len(compressedY)-1)
 	roots := make([]*types.Node, 0, 2*len(rectangles)+1)
-	lastX := events[0].N
+	n := events[0].N
 	for _, event := range events {
-		if event.N != lastX {
+		if event.N != n {
 			roots = append(roots, root)
-			lastX = event.N
+			n = event.N
 		}
 		root = AddNode(root, event.Left, event.Right, event.State)
 	}
