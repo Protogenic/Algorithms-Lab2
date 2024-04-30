@@ -12,8 +12,8 @@ func main() {
 	rectangles, points := randomData()
 	fmt.Println("Brute force")
 	solution.BruteForce(rectangles, points)
-	//fmt.Println("Compressed map")
-	//solution.CompressedMap(rectangles, points)
+	fmt.Println("Compressed map")
+	solution.CompressedMap(rectangles, points)
 	fmt.Println("Segment tree")
 	solution.SegmentTree(rectangles, points)
 }
