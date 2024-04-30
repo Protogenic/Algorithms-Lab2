@@ -249,6 +249,9 @@ func randomData() ([]types.Rectangle, []types.Point) {
 	return rectangles, points
 }
 ```
+---
+## Графики
+
 
 
 
